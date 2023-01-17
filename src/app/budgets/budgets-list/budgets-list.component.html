@@ -1,0 +1,48 @@
+<ng-template #loading>
+  <div class="budgets">
+    <div class="alert alert-info">Loading...</div>
+  </div>
+</ng-template>
+
+<ng-template #empty>
+  <div class="budgets">
+    <div class="alert alert-info">There are no budgets.</div>
+  </div>
+</ng-template>
+
+<ng-container *ngIf="budgets; else loading">
+  <ul class="budgets" *ngIf="budgets.length; else empty">
+    <li
+      class="budgets-item"
+      *ngFor="let budget of budgets; trackBy: budgetTrackBy"
+      [ngStyle]="{
+        'border-left-color': budget.color,
+        'box-shadow':
+          budget.id === currentBudget.id
+            ? '0 0 0 0.1rem ' + budget.color
+            : 'none'
+      }"
+      (click)="this.selected.emit(budget)"
+    >
+      <div class="budgets-item-details">
+        <p class="budgets-item-name">
+          {{ budget.name }}
+        </p>
+        <p class="budgets-item-value">
+          Budget: {{ budget.value | currency : "USD" }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        class="btn btn-icon btn-danger budgets-item-delete"
+        (click)="
+          this.deleted.emit({ id: budget.id, name: budget.name });
+          $event.stopImmediatePropagation()
+        "
+      >
+        <fa-icon [icon]="faTrash"></fa-icon> Delete
+      </button>
+    </li>
+  </ul>
+</ng-container>

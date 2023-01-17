@@ -1,0 +1,35 @@
+@import "../../../app/common/scss/variables";
+
+:host {
+  flex: 1;
+  padding: 2rem;
+  border: 2px solid $gray-200;
+  border-radius: 0.375rem;
+
+  @media (min-width: 768px) {
+    position: sticky;
+    top: 2rem;
+  }
+}
+
+.expenses-form {
+  &-item {
+    margin-bottom: 1rem;
+  }
+
+  &-label {
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    display: block;
+    color: $gray-700;
+  }
+
+  &-buttons {
+    display: flex;
+
+    > :not(:last-child) {
+      margin-right: 0.5rem;
+    }
+  }
+}

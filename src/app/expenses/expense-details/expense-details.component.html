@@ -1,0 +1,67 @@
+<form class="expenses-form" [formGroup]="form" (ngSubmit)="this.saved.emit()">
+  <div class="expenses-form-item">
+    <label for="name" class="expenses-form-label">Name</label>
+    <input
+      type="text"
+      name="name"
+      class="form-control expenses-form-input"
+      formControlName="name"
+      required
+    />
+  </div>
+
+  <div class="expenses-form-item">
+    <label for="price" class="expenses-form-label">Price</label>
+    <input
+      type="text"
+      name="price"
+      class="form-control expenses-form-input"
+      formControlName="price"
+      required
+      pattern="\d*"
+    />
+  </div>
+
+  <div class="expenses-form-item">
+    <label for="amount" class="expenses-form-label">Amount</label>
+    <input
+      type="text"
+      name="amount"
+      class="form-control expenses-form-input"
+      formControlName="amount"
+      required
+      pattern="\d*"
+    />
+  </div>
+
+  <div class="expenses-form-item">
+    <label for="budgetId" class="expenses-form-label">Budget</label>
+
+    <select
+      name="budgetId"
+      class="form-control form-select"
+      formControlName="budgetId"
+      required
+    >
+      <option value="" disabled selected>Select budget</option>
+
+      <option *ngFor="let budget of budgets" [value]="budget.id" required>
+        {{ budget.name }}
+      </option>
+    </select>
+  </div>
+
+  <div class="expenses-form-buttons">
+    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+      <fa-icon [icon]="faSave"></fa-icon> {{ mode }}
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-secondary"
+      (click)="this.reseted.emit()"
+    >
+      <fa-icon [icon]="faUndo"></fa-icon> Reset
+    </button>
+  </div>
+</form>

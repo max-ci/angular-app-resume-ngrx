@@ -1,0 +1,50 @@
+<div class="load-sample-data-wrapper">
+  <button
+    type="button"
+    class="btn btn-primary load-sample-data"
+    (click)="loadSampleData()"
+  >
+    Load sample data
+  </button>
+</div>
+
+<div class="expenses-container">
+  <app-expenses-list
+    [budgets]="budgets$ | async"
+    [currentExpense]="currentExpense"
+    (selected)="setCurrent($event)"
+    (deleted)="delete($event)"
+  ></app-expenses-list>
+
+  <app-expense-details
+    [budgets]="budgets$ | async"
+    [mode]="mode"
+    [form]="form"
+    (saved)="save()"
+    (reseted)="reset()"
+  ></app-expense-details>
+</div>
+
+<ng-template #dialogTemplate let-data>
+  <div class="dialog-content">
+    <p class="dialog-content-message">{{ data.text }}</p>
+
+    <div class="dialog-buttons">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="dialogRef.close(false)"
+      >
+        Cancel
+      </button>
+
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="dialogRef.close(true)"
+      >
+        {{ data.buttonText }}
+      </button>
+    </div>
+  </div>
+</ng-template>

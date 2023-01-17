@@ -1,0 +1,10 @@
+.budgets-container {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 768px) {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}

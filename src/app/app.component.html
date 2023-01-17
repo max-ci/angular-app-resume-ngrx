@@ -1,0 +1,29 @@
+<div class="main-wrapper">
+  <h1 class="main-heading">
+    budget<span class="main-heading-secondary">Tracker</span>
+  </h1>
+
+  <nav class="nav" *ngIf="isLoggedIn$ | async">
+    <a
+      class="nav-link"
+      *ngFor="let link of links"
+      [routerLink]="link.path"
+      routerLinkActive="active"
+      >{{ link.title }}</a
+    >
+
+    <button type="button" class="nav-link" (click)="logout()">Logout</button>
+  </nav>
+
+  <main class="container">
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer class="footer">
+    <span class="footer-logo"
+      >budget<span class="footer-logo-secondary">Tracker</span></span
+    >
+  </footer>
+</div>
+
+<app-notifications></app-notifications>

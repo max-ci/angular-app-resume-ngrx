@@ -1,0 +1,80 @@
+<ng-template #loading>
+  <div class="budgets">
+    <div class="alert alert-info">Loading...</div>
+  </div>
+</ng-template>
+
+<ng-template #empty>
+  <div class="budgets">
+    <div class="alert alert-info">There are no expenses.</div>
+  </div>
+</ng-template>
+
+<ng-container *ngIf="budgets; else loading">
+  <ul
+    class="budgets"
+    *ngIf="budgets.length; else empty"
+    [ngClass]="{
+      'budgets-static': mode === 'static'
+    }"
+  >
+    <ng-container *ngFor="let budget of budgets; trackBy: budgetTrackBy">
+      <li class="budgets-item">
+        <p
+          class="budgets-item-details"
+          [ngStyle]="{ 'border-left-color': budget.color }"
+        >
+          <span class="budgets-item-name">{{ budget.name }}</span>
+          <span class="budgets-item-value"
+            >Budget: {{ budget.value | currency : "USD" }}</span
+          >
+        </p>
+
+        <ng-template #expensesEmpty>
+          <div class="alert alert-info">No expenses.</div>
+        </ng-template>
+
+        <ul
+          class="expenses"
+          *ngIf="budget.expenses && budget.expenses.length; else expensesEmpty"
+        >
+          <li
+            class="expenses-item"
+            *ngFor="let expense of budget.expenses; trackBy: expenseTrackBy"
+            [ngClass]="{
+              'expenses-item-select': mode !== 'static',
+              active: mode !== 'static' && expense.id === currentExpense.id
+            }"
+            (click)="this.selected.emit({expense, budgetId: budget.id})"
+          >
+            <div>
+              <p class="expenses-item-name">{{ expense.name }}</p>
+              <p class="expenses-item-price">
+                price: {{ expense.price | currency : "USD" }}
+              </p>
+              <p class="expenses-item-amount">amount: {{ expense.amount }}</p>
+              <p class="expenses-item-amount">
+                total: {{ expense.price * expense.amount | currency : "USD" }}
+              </p>
+            </div>
+
+            <button
+              *ngIf="mode !== 'static'"
+              type="button"
+              class="btn btn-danger expenses-item-delete"
+              (click)="
+                this.deleted.emit({
+                  expenseId: expense.id,
+                  expenseName: expense.name
+                });
+                $event.stopImmediatePropagation()
+              "
+            >
+              <fa-icon [icon]="faTrash"></fa-icon> Delete
+            </button>
+          </li>
+        </ul>
+      </li>
+    </ng-container>
+  </ul>
+</ng-container>

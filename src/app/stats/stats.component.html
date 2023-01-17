@@ -1,0 +1,38 @@
+<ng-template #loading>
+  <div class="alert alert-info">Loading...</div>
+</ng-template>
+
+<ng-template #empty>
+  <div class="alert alert-info">No stats to show.</div>
+</ng-template>
+
+<ng-container *ngIf="stats$ | async as stats; else loading">
+  <ul
+    *ngIf="stats.length; else empty"
+    class="stats"
+    [ngClass]="{ 'stats-home': mode === 'home' }"
+  >
+    <li class="stats-item" *ngFor="let stat of stats">
+      <p class="stats-name">{{ stat.budgetName }}</p>
+      <div
+        class="stats-pie-chart"
+        [ngClass]="{ 'stats-pie-chart-total': stat.isTotal === true }"
+        [ngStyle]="{
+          '--percent.%': stat.ratio,
+          '--bg-color': stat.budgetColor
+        }"
+      >
+        <p
+          class="stats-value-percent"
+          [ngClass]="{ 'stats-exceeded': stat.ratio > 100 }"
+        >
+          {{ stat.ratio | number : "1.1-1" }}%
+        </p>
+        <p class="stats-value">
+          {{ stat.expensesValue | currency : "USD" }} /
+          {{ stat.budgetValue | currency : "USD" }}
+        </p>
+      </div>
+    </li>
+  </ul>
+</ng-container>

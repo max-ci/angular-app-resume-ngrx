@@ -1,0 +1,51 @@
+<form class="budgets-form" [formGroup]="form" (ngSubmit)="this.saved.emit()">
+  <input type="hidden" formControlName="id" />
+
+  <div class="budgets-form-item">
+    <label class="budgets-form-label" for="name">Name</label>
+    <input
+      class="budgets-form-input form-control"
+      type="text"
+      name="name"
+      formControlName="name"
+    />
+  </div>
+
+  <div class="budgets-form-item">
+    <label class="budgets-form-label" for="color">Color</label>
+    <input
+      class="budgets-form-input form-control form-control-color"
+      type="color"
+      name="color"
+      formControlName="color"
+      required
+    />
+  </div>
+
+  <div class="budgets-form-item">
+    <label class="budgets-form-label" for="value">Limit</label>
+    <input
+      class="budgets-form-input form-control"
+      type="text"
+      name="value"
+      formControlName="value"
+    />
+  </div>
+
+  <div class="budgets-form-buttons">
+    <button
+      type="submit"
+      class="budgets-form-button btn btn-primary"
+      [disabled]="form.invalid"
+    >
+      <fa-icon [icon]="faSave"></fa-icon> {{ mode }}
+    </button>
+    <button
+      type="button"
+      class="budgets-form-button btn btn-secondary"
+      (click)="this.reseted.emit()"
+    >
+      <fa-icon [icon]="faUndo"></fa-icon> Reset
+    </button>
+  </div>
+</form>
