@@ -22,6 +22,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { environment } from '../environments/environment';
+import { StoreModule } from '@ngrx/store';
 
 const firebaseConfig = {
   apiKey: environment.firebase.apiKey,
@@ -58,6 +59,7 @@ const firebaseConfig = {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     FontAwesomeModule,
+    StoreModule.forRoot({}, {}),
   ],
   providers: [{ provide: DialogRef, useValue: {} }],
   bootstrap: [AppComponent],
