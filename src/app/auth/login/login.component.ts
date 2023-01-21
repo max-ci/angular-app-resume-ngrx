@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { BehaviorSubject, of, Subject } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AuthService } from 'src/app/common/services/auth.service';
 import { NotificationService } from 'src/app/common/services/notification.service';
 
