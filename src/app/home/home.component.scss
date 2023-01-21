@@ -1,5 +1,41 @@
-:host {
+@import "../../app/common/scss/variables";
+
+.home {
   @media (min-width: 992px) {
     display: flex;
+  }
+}
+
+.search-form {
+  margin-bottom: 2rem;
+  position: relative;
+  padding-right: 3rem;
+
+  &-loader {
+    position: absolute;
+    right: 95px;
+    top: 15px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid $primary;
+    border-bottom-color: $gray-300;
+    opacity: 0;
+    visibility: hidden;
+    animation: search-form-loader 1s linear infinite;
+
+    &-active {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+@keyframes search-form-loader {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

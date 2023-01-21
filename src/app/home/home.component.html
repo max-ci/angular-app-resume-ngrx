@@ -1,6 +1,23 @@
-<app-expenses-list
-  [budgets]="expenses$ | async"
-  mode="static"
-></app-expenses-list>
+<form class="search-form">
+  <input
+    type="search"
+    class="form-control search-form-input"
+    placeholder="Search expenses... (limited, Firestore doesn't support full-text search and is case sensitive)"
+    [formControl]="search"
+  />
+  <div
+    class="search-form-loader"
+    [ngClass]="{
+      'search-form-loader-active': (searchLoading$ | async) === true
+    }"
+  ></div>
+</form>
 
-<app-stats mode="home"></app-stats>
+<div class="home">
+  <app-expenses-list
+    [budgets]="expenses$ | async"
+    mode="static"
+  ></app-expenses-list>
+
+  <app-stats mode="home"></app-stats>
+</div>
