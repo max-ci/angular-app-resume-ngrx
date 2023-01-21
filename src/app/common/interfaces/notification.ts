@@ -1,5 +1,5 @@
 export interface Notification {
-  id: string;
-  message: string;
-  type: string;
+  readonly id: string;
+  readonly message: string;
+  readonly type: string;
 }

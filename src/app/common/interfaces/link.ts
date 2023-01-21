@@ -1,4 +1,4 @@
 export interface Link {
-  path: string;
-  title: string;
+  readonly path: string;
+  readonly title: string;
 }

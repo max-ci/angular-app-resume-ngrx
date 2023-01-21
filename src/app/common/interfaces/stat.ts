@@ -1,8 +1,8 @@
 export interface Stat {
-  budgetName: string;
-  budgetValue: number;
-  expensesValue: number;
-  budgetColor: string;
-  ratio: number;
-  isTotal: boolean;
+  readonly budgetName: string;
+  readonly budgetValue: number;
+  readonly expensesValue: number;
+  readonly budgetColor: string;
+  readonly ratio: number;
+  readonly isTotal: boolean;
 }

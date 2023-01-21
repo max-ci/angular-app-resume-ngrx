@@ -1,7 +1,7 @@
 export interface Expense {
-  id: string;
-  budgetId: string;
-  name: string;
-  amount: number;
-  price: number;
+  readonly id: string;
+  readonly budgetId: string;
+  readonly name: string;
+  readonly amount: number;
+  readonly price: number;
 }
