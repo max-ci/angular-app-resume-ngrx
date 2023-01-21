@@ -12,6 +12,7 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormGroup } from '@angular/forms';
+import { FormState } from 'src/app/common/enums/FormState';
 
 @Component({
   selector: 'app-expense-details',
@@ -25,7 +26,7 @@ export class ExpenseDetailsComponent {
 
   @Input() form: FormGroup;
   @Input() budgets: Budget[] = [];
-  @Input() mode = '';
+  @Input() formState: FormState;
 
   @Output() saved = new EventEmitter();
   @Output() reseted = new EventEmitter();

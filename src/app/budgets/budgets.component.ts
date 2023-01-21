@@ -8,9 +8,19 @@ import {
 import { Budget } from '../common/interfaces/budget';
 import { BudgetsService } from '../common/services/budgets.service';
 import { NotificationService } from '../common/services/notification.service';
-import { EMPTY, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+  BehaviorSubject,
+  catchError,
+  EMPTY,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormState } from '../common/enums/FormState';
 
 @Component({
   selector: 'app-budgets',
@@ -21,16 +31,17 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class BudgetsComponent implements OnDestroy {
   public readonly budgets$: Observable<Budget[]>;
   private readonly _unsubscribeSub$: Subject<void>;
+  private readonly currentId$: BehaviorSubject<void>;
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
 
-  emptyBudget: Budget = {
+  private readonly emptyBudget: Budget = {
     id: '',
     name: '',
     color: '#333333',
     value: 0,
   };
-  currentBudget: Budget = { ...this.emptyBudget };
+  public currentId: string = this.emptyBudget.id;
 
   public form: FormGroup = this.formBuilder.group({
     id: [this.emptyBudget.id],
@@ -46,7 +57,7 @@ export class BudgetsComponent implements OnDestroy {
     ],
   });
 
-  mode: string = 'Create';
+  public formState: FormState = FormState.Create;
 
   constructor(
     private budgetsService: BudgetsService,
@@ -64,15 +75,20 @@ export class BudgetsComponent implements OnDestroy {
     this._unsubscribeSub$.complete();
   }
 
-  setCurrent(budget: Budget): void {
-    if (budget.id !== '' && this.currentBudget.id === budget.id) {
+  setCurrentId(budget: Budget): void {
+    if (budget.id === '') {
+      this.currentId = budget.id;
+      return;
+    }
+
+    if (this.currentId === budget.id) {
       this.reset();
       return;
     }
 
     this.form.patchValue({ ...budget });
-    this.currentBudget = { ...budget };
-    this.setMode('Save');
+    this.currentId = budget.id;
+    this.setFormState(FormState.Save);
   }
 
   save(): void {
@@ -88,30 +104,32 @@ export class BudgetsComponent implements OnDestroy {
   create(budget: Budget): void {
     this.budgetsService
       .create(budget)
-      .pipe(takeUntil(this._unsubscribeSub$))
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Budget "${budget.name}" added.`);
-          this.reset();
-        },
-        error: (error): void => {
+      .pipe(
+        takeUntil(this._unsubscribeSub$),
+        catchError((error) => {
           this.showGeneralError(error);
-        },
+          return of('error');
+        })
+      )
+      .subscribe(() => {
+        this.notificationService.show(`Budget "${budget.name}" added.`);
+        this.reset();
       });
   }
 
   update(budget: Budget): void {
     this.budgetsService
       .update(budget)
-      .pipe(takeUntil(this._unsubscribeSub$))
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Budget "${budget.name}" updated.`);
-          this.reset();
-        },
-        error: (error): void => {
+      .pipe(
+        takeUntil(this._unsubscribeSub$),
+        catchError((error) => {
           this.showGeneralError(error);
-        },
+          return of('error');
+        })
+      )
+      .subscribe(() => {
+        this.notificationService.show(`Budget "${budget.name}" updated.`);
+        this.reset();
       });
   }
 
@@ -132,18 +150,17 @@ export class BudgetsComponent implements OnDestroy {
           }
 
           return this.budgetsService.delete(id);
+        }),
+        catchError((error) => {
+          this.showGeneralError(error);
+          return of('error');
         })
       )
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Budget "${name}" deleted.`);
-          if (this.currentBudget.id === id) {
-            this.reset();
-          }
-        },
-        error: (error): void => {
-          this.showGeneralError(error);
-        },
+      .subscribe(() => {
+        this.notificationService.show(`Budget "${name}" deleted.`);
+        if (this.currentId === id) {
+          this.reset();
+        }
       });
   }
 
@@ -164,27 +181,26 @@ export class BudgetsComponent implements OnDestroy {
           }
 
           return this.budgetsService.loadSampleData();
+        }),
+        catchError((error) => {
+          this.showGeneralError(error);
+          return of('error');
         })
       )
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show('Sample data loaded.');
-          this.reset();
-        },
-        error: (error): void => {
-          this.showGeneralError(error);
-        },
+      .subscribe(() => {
+        this.notificationService.show('Sample data loaded.');
+        this.reset();
       });
   }
 
   reset(): void {
-    this.setCurrent(this.emptyBudget);
-    this.form.reset();
-    this.setMode('Create');
+    this.setCurrentId(this.emptyBudget);
+    this.form.reset(this.emptyBudget);
+    this.setFormState(FormState.Create);
   }
 
-  setMode(mode: string): void {
-    this.mode = mode;
+  setFormState(formState: FormState): void {
+    this.formState = formState;
   }
 
   showGeneralError(error: unknown): void {

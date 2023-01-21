@@ -4,186 +4,228 @@ import { v4 as uuidv4 } from 'uuid';
 import { budgetsData, expensesData } from '../data/budgets.data';
 import {
   BehaviorSubject,
-  forkJoin,
+  catchError,
+  combineLatest,
   map,
   Observable,
   of,
   shareReplay,
   switchMap,
-  tap,
+  take,
 } from 'rxjs';
 import {
-  parseFirestoreObject,
-  prepareGetPayload,
-} from '../helpers/firestore.helper';
-import { HttpClientService } from './http-client.service';
-import { AuthService } from './auth.service';
+  AngularFirestore,
+  AngularFirestoreCollection,
+} from '@angular/fire/compat/firestore';
 import { Expense } from '../interfaces/expense';
-
-const POST_BASE_URL =
-  'https://firestore.googleapis.com/v1/projects/angular-resume-app/databases/(default)/documents';
-const DELETE_BASE_URL = 'https://firestore.googleapis.com/v1/';
-const BASE_BUDGETS_COLLECTION_PATH =
-  'projects/angular-resume-app/databases/(default)/documents/budgets/';
-const BASE_EXPENSES_COLLECTION_PATH =
-  'projects/angular-resume-app/databases/(default)/documents/expenses/';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BudgetsService {
   public readonly budgets$: Observable<Budget[]>;
-  private readonly _refreshSub$: BehaviorSubject<void>;
+  public readonly expenses$: Observable<Budget[]>;
+  private readonly searchString$: BehaviorSubject<string> = new BehaviorSubject(
+    ''
+  );
 
-  constructor(
-    private http: HttpClientService,
-    private authService: AuthService
-  ) {
-    this._refreshSub$ = new BehaviorSubject<void>(undefined);
+  budgetsColName: string = 'budgets';
+  expensesColName: string = 'expenses';
 
-    this.budgets$ = this._refreshSub$.pipe(
-      switchMap(() => this.authService.userToken$),
-      switchMap((token: string) => {
-        if (!token) {
-          return of(null);
-        }
+  public readonly budgetsCol: AngularFirestoreCollection<Budget> =
+    this.afs.collection<Budget>(this.budgetsColName, (ref) =>
+      ref.orderBy('name')
+    );
+  public readonly expensesCol: AngularFirestoreCollection<Expense> =
+    this.afs.collection<Expense>(this.expensesColName, (ref) =>
+      ref.orderBy('name')
+    );
 
-        return this.http.post(
-          `${POST_BASE_URL}:runQuery`,
-          prepareGetPayload('budgets', 'name'),
-          token
-        );
-      }),
-      map((data: any) => {
-        if (!data || !data?.[0]?.document) {
-          return [];
-        }
+  constructor(private afs: AngularFirestore) {
+    this.budgets$ = this.budgetsCol.valueChanges().pipe(
+      catchError(() => of([])),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
-        return data.map((obj: any) => {
-          const budget = parseFirestoreObject(obj.document.fields);
-          return { ...budget, id: obj.document.name };
+    this.expenses$ = combineLatest({
+      budgets: this.budgetsCol.valueChanges(),
+      expenses: this.searchString$.pipe(
+        switchMap((searchString) => {
+          if (!searchString) {
+            return this.expensesCol.valueChanges();
+          } else {
+            return this.afs
+              .collection<Expense>(this.expensesColName, (ref) =>
+                ref
+                  .orderBy('name')
+                  .startAt(searchString)
+                  .endAt(`${searchString}\uf8ff`)
+              )
+              .valueChanges();
+          }
+        })
+      ),
+    }).pipe(
+      map((data) => {
+        return data.budgets.map((budget: Budget) => {
+          const expenses = data.expenses.filter((expense: Expense) => {
+            return budget.id === expense.budgetId;
+          });
+
+          return {
+            ...budget,
+            expenses,
+          };
         });
       }),
+      catchError(() => of([])),
       shareReplay({ bufferSize: 1, refCount: true })
     );
   }
 
+  get(id: string) {
+    return this.afs
+      .collection<Budget>(this.budgetsColName, (ref) =>
+        ref.where('id', '==', id)
+      )
+      .valueChanges()
+      .pipe(take(1));
+  }
+
   create(budget: Budget) {
-    return this.authService.userToken$.pipe(
-      switchMap((token: string) => {
-        return this.http.post(
-          `${POST_BASE_URL}/budgets`,
-          {
-            fields: {
-              id: { stringValue: uuidv4() },
-              name: { stringValue: budget.name },
-              color: { stringValue: budget.color },
-              value: { integerValue: budget.value },
-            },
-          },
-          token
-        );
-      }),
-      tap((): void => {
-        this._refreshSub$.next();
+    return of(this.budgetsCol.add({ ...budget, id: uuidv4() }));
+  }
+
+  update(budget: Budget) {
+    return this.afs
+      .collection<Budget>(this.budgetsColName, (ref) =>
+        ref.where('id', '==', budget.id)
+      )
+      .snapshotChanges()
+      .pipe(
+        take(1),
+        map((actions) => {
+          return actions?.[0]?.payload?.doc?.id;
+        }),
+        switchMap((documentId: string) => {
+          return this.budgetsCol.doc<Budget>(documentId).update(budget);
+        })
+      );
+  }
+
+  delete(id: string) {
+    return combineLatest({
+      budgets: this.afs
+        .collection<Budget>(this.budgetsColName, (ref) =>
+          ref.where('id', '==', id)
+        )
+        .snapshotChanges(),
+      expenses: this.afs
+        .collection<Expense>(this.expensesColName, (ref) =>
+          ref.where('budgetId', '==', id)
+        )
+        .snapshotChanges(),
+    }).pipe(
+      take(1),
+      switchMap((data) => {
+        const batch = this.afs.firestore.batch();
+
+        data.budgets.forEach((budget) => {
+          const deleteDoc = this.afs
+            .collection<Budget>(this.budgetsColName)
+            .doc<Budget>(budget?.payload?.doc?.id).ref;
+          batch.delete(deleteDoc);
+        });
+
+        data.expenses.forEach((expense) => {
+          const deleteDoc = this.afs
+            .collection<Expense>(this.expensesColName)
+            .doc<Expense>(expense?.payload?.doc?.id).ref;
+          batch.delete(deleteDoc);
+        });
+
+        return of(batch.commit());
       })
     );
   }
 
-  update(updatedBudget: Budget) {
-    return this.authService.userToken$.pipe(
-      switchMap((token: string) => {
-        return this.http.post(
-          `${POST_BASE_URL}:commit`,
-          {
-            writes: [
-              {
-                update: {
-                  name: updatedBudget.id,
-                  fields: {
-                    id: { stringValue: updatedBudget.id },
-                    name: { stringValue: updatedBudget.name },
-                    color: { stringValue: updatedBudget.color },
-                    value: {
-                      integerValue: updatedBudget.value,
-                    },
-                  },
-                },
-              },
-            ],
-          },
-          token
-        );
-      }),
-      tap((): void => this._refreshSub$.next())
-    );
+  getExpense(id: string) {
+    return this.afs
+      .collection<Expense>(this.expensesColName, (ref) =>
+        ref.where('id', '==', id)
+      )
+      .valueChanges()
+      .pipe(take(1));
   }
 
-  delete(id: string) {
-    return this.authService.userToken$.pipe(
-      switchMap((token: string) => {
-        return this.http.delete(`${DELETE_BASE_URL}${id}`, token);
-      }),
-      tap((): void => this._refreshSub$.next())
-    );
+  createExpense(expense: Expense) {
+    return of(this.expensesCol.add({ ...expense, id: uuidv4() }));
+  }
+
+  updateExpense(expense: Expense) {
+    return this.afs
+      .collection<Expense>(this.expensesColName, (ref) =>
+        ref.where('id', '==', expense.id)
+      )
+      .snapshotChanges()
+      .pipe(
+        take(1),
+        map((actions) => {
+          return actions?.[0]?.payload?.doc?.id;
+        }),
+        switchMap((documentId: string) => {
+          return this.expensesCol.doc<Budget>(documentId).update(expense);
+        })
+      );
+  }
+
+  deleteExpense(id: string) {
+    return of(this.expensesCol.doc<Budget>(id).delete());
+  }
+
+  setSearchString(searchString: string) {
+    this.searchString$.next(searchString);
   }
 
   loadSampleData() {
-    const budgets = budgetsData.map((budget: Budget, index: number) => {
-      return {
-        update: {
-          name: `${BASE_BUDGETS_COLLECTION_PATH}budget${index}`,
-          fields: {
-            id: {
-              stringValue: `${BASE_BUDGETS_COLLECTION_PATH}budget${index}`,
-            },
-            name: { stringValue: budget.name },
-            color: { stringValue: budget.color },
-            value: { integerValue: budget.value },
-          },
-        },
-      };
-    });
+    return combineLatest({
+      budgets: this.budgetsCol.snapshotChanges(),
+      expenses: this.expensesCol.snapshotChanges(),
+    }).pipe(
+      take(1),
+      switchMap((data) => {
+        const batch = this.afs.firestore.batch();
 
-    const expenses = expensesData.map((expense: Expense, index: number) => {
-      return {
-        update: {
-          name: `${BASE_EXPENSES_COLLECTION_PATH}expense${index}`,
-          fields: {
-            id: {
-              stringValue: `${BASE_EXPENSES_COLLECTION_PATH}expense${index}`,
-            },
-            budgetId: {
-              stringValue: `${BASE_BUDGETS_COLLECTION_PATH}budget${expense.budgetId}`,
-            },
-            name: { stringValue: expense.name },
-            price: { integerValue: expense.price },
-            amount: { integerValue: expense.amount },
-          },
-        },
-      };
-    });
-
-    return this.authService.userToken$.pipe(
-      switchMap((token: string) => {
-        return forkJoin({
-          budgets: this.http.post(
-            `${POST_BASE_URL}:commit`,
-            {
-              writes: budgets,
-            },
-            token
-          ),
-          expenses: this.http.post(
-            `${POST_BASE_URL}:commit`,
-            {
-              writes: expenses,
-            },
-            token
-          ),
+        data.budgets.forEach((budget) => {
+          const deleteDoc = this.afs
+            .collection<Budget>(this.budgetsColName)
+            .doc<Budget>(budget?.payload?.doc?.id).ref;
+          batch.delete(deleteDoc);
         });
-      }),
-      tap((): void => this._refreshSub$.next())
+
+        data.expenses.forEach((expense) => {
+          const deleteDoc = this.afs
+            .collection<Expense>(this.expensesColName)
+            .doc<Expense>(expense?.payload?.doc?.id).ref;
+          batch.delete(deleteDoc);
+        });
+
+        budgetsData.forEach((budget: Budget) => {
+          const insert = this.afs
+            .collection<Budget>(this.budgetsColName)
+            .doc<Budget>(budget.id).ref;
+          batch.set(insert, budget);
+        });
+
+        expensesData.forEach((expense: Expense) => {
+          const insert = this.afs
+            .collection<Expense>(this.expensesColName)
+            .doc<Expense>(expense.id).ref;
+          batch.set(insert, expense);
+        });
+
+        return of(batch.commit());
+      })
     );
   }
 }

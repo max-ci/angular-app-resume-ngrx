@@ -11,13 +11,13 @@
 <div class="budgets-container">
   <app-budgets-list
     [budgets]="budgets$ | async"
-    [currentBudget]="currentBudget"
-    (selected)="setCurrent($event)"
+    [currentId]="currentId"
+    (selected)="setCurrentId($event)"
     (deleted)="delete($event)"
   ></app-budgets-list>
 
   <app-budget-details
-    [mode]="mode"
+    [formState]="formState"
     [form]="form"
     (saved)="save()"
     (reseted)="reset()"

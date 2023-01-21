@@ -8,7 +8,7 @@ import { map, Observable } from 'rxjs';
 import { Stat } from '../common/interfaces/stat';
 import { Budget } from '../common/interfaces/budget';
 import { Expense } from '../common/interfaces/expense';
-import { ExpensesService } from '../common/services/expenses.service';
+import { BudgetsService } from '../common/services/budgets.service';
 
 @Component({
   selector: 'app-stats',
@@ -22,8 +22,8 @@ export class StatsComponent implements OnInit {
 
   @Input() mode: string = '';
 
-  constructor(private expensesService: ExpensesService) {
-    this.expenses$ = this.expensesService.expenses$;
+  constructor(private budgetsService: BudgetsService) {
+    this.expenses$ = this.budgetsService.expenses$;
   }
 
   ngOnInit(): void {
@@ -62,46 +62,47 @@ export class StatsComponent implements OnInit {
           return [];
         }
 
-        const totalBudgetsValue = budgets.reduce(
-          (previousValue: number, budget: Budget) => {
-            return previousValue + budget.value;
-          },
-          0
-        );
-
-        const totalExpensesValue = budgets.reduce(
-          (previousValue: number, budget: Budget) => {
-            return (
-              previousValue +
-              budget.expenses.reduce(
-                (previousValue: number, expense: Expense) =>
-                  previousValue + expense.price * expense.amount,
-                0
-              )
-            );
-          },
-          0
-        );
-
-        const totalRadio =
-          totalBudgetsValue === 0
-            ? 0
-            : (totalExpensesValue / totalBudgetsValue) * 100;
-
-        const allStats = [
-          {
-            budgetName: 'Total',
-            budgetValue: totalBudgetsValue,
-            budgetColor: '#adb5bd',
-            expensesValue: totalExpensesValue,
-            ratio: totalRadio,
-            isTotal: true,
-          },
-          ...stats,
-        ];
-
+        const totalBudet = this.getTotalStats(budgets);
+        const allStats = [totalBudet, ...stats];
         return allStats;
       })
     );
+  }
+
+  getTotalStats(budgets: Budget[]) {
+    const totalBudgetsValue = budgets.reduce(
+      (previousValue: number, budget: Budget) => {
+        return previousValue + budget.value;
+      },
+      0
+    );
+
+    const totalExpensesValue = budgets.reduce(
+      (previousValue: number, budget: Budget) => {
+        return (
+          previousValue +
+          budget.expenses.reduce(
+            (previousValue: number, expense: Expense) =>
+              previousValue + expense.price * expense.amount,
+            0
+          )
+        );
+      },
+      0
+    );
+
+    const totalRadio =
+      totalBudgetsValue === 0
+        ? 0
+        : (totalExpensesValue / totalBudgetsValue) * 100;
+
+    return {
+      budgetName: 'Total',
+      budgetValue: totalBudgetsValue,
+      budgetColor: '#adb5bd',
+      expensesValue: totalExpensesValue,
+      ratio: totalRadio,
+      isTotal: true,
+    };
   }
 }

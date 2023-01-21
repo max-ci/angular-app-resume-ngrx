@@ -19,7 +19,7 @@ export class ExpensesListComponent {
   faTrash: IconDefinition = faTrash;
 
   @Input() budgets: Budget[] = [];
-  @Input() currentExpense: Expense;
+  @Input() currentId: string;
   @Input() mode: string = '';
 
   @Output() selected = new EventEmitter();

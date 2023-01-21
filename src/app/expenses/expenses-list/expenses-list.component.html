@@ -43,9 +43,9 @@
             *ngFor="let expense of budget.expenses; trackBy: expenseTrackBy"
             [ngClass]="{
               'expenses-item-select': mode !== 'static',
-              active: mode !== 'static' && expense.id === currentExpense.id
+              active: mode !== 'static' && expense.id === currentId
             }"
-            (click)="this.selected.emit({expense, budgetId: budget.id})"
+            (click)="mode !== 'static' && this.selected.emit({expense, budgetId: budget.id})"
           >
             <div>
               <p class="expenses-item-name">{{ expense.name }}</p>

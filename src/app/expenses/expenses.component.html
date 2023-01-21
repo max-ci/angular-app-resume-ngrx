@@ -11,14 +11,14 @@
 <div class="expenses-container">
   <app-expenses-list
     [budgets]="budgets$ | async"
-    [currentExpense]="currentExpense"
-    (selected)="setCurrent($event)"
+    [currentId]="currentId"
+    (selected)="setCurrentId($event)"
     (deleted)="delete($event)"
   ></app-expenses-list>
 
   <app-expense-details
     [budgets]="budgets$ | async"
-    [mode]="mode"
+    [formState]="formState"
     [form]="form"
     (saved)="save()"
     (reseted)="reset()"

@@ -6,12 +6,21 @@ import {
   ViewChild,
 } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { EMPTY, Observable, Subject, switchMap, takeUntil } from 'rxjs';
+import {
+  catchError,
+  EMPTY,
+  Observable,
+  of,
+  Subject,
+  switchMap,
+  takeUntil,
+} from 'rxjs';
 import { Budget } from '../common/interfaces/budget';
 import { Expense } from '../common/interfaces/expense';
-import { ExpensesService } from '../common/services/expenses.service';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { NotificationService } from '../common/services/notification.service';
+import { FormState } from '../common/enums/FormState';
+import { BudgetsService } from '../common/services/budgets.service';
 
 @Component({
   selector: 'app-expenses',
@@ -25,15 +34,16 @@ export class ExpensesComponent implements OnDestroy {
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
 
-  emptyExpense: Expense = {
+  private readonly emptyExpense: Expense = {
     id: '',
     budgetId: '',
     name: '',
     amount: 0,
     price: 0,
   };
-  currentExpense: Expense = { ...this.emptyExpense };
-  mode: string = 'Create';
+
+  public currentId: string = this.emptyExpense.id;
+  public formState: FormState = FormState.Create;
 
   public form: FormGroup = this.formBuilder.group({
     id: [this.emptyExpense.id],
@@ -58,13 +68,13 @@ export class ExpensesComponent implements OnDestroy {
   });
 
   constructor(
-    private expensesService: ExpensesService,
+    private budgetsService: BudgetsService,
     private notificationService: NotificationService,
     private formBuilder: FormBuilder,
     private dialog: Dialog,
     public dialogRef: DialogRef<boolean>
   ) {
-    this.budgets$ = this.expensesService.expenses$;
+    this.budgets$ = this.budgetsService.expenses$;
     this._unsubscribeSub$ = new Subject<void>();
   }
 
@@ -73,15 +83,20 @@ export class ExpensesComponent implements OnDestroy {
     this._unsubscribeSub$.complete();
   }
 
-  setCurrent({ expense }: { expense: Expense }): void {
-    if (expense.id !== '' && this.currentExpense.id === expense.id) {
+  setCurrentId({ expense }: { expense: Expense }): void {
+    if (expense.id === '') {
+      this.currentId = expense.id;
+      return;
+    }
+
+    if (this.currentId === expense.id) {
       this.reset();
       return;
     }
 
-    this.currentExpense = { ...expense };
+    this.currentId = expense.id;
     this.form.patchValue({ ...expense });
-    this.setMode('Save');
+    this.setFormState(FormState.Save);
   }
 
   save(): void {
@@ -95,32 +110,34 @@ export class ExpensesComponent implements OnDestroy {
   }
 
   create(expense: Expense): void {
-    this.expensesService
-      .create(expense)
-      .pipe(takeUntil(this._unsubscribeSub$))
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Expense "${expense.name}" added.`);
-          this.reset();
-        },
-        error: (error): void => {
+    this.budgetsService
+      .createExpense(expense)
+      .pipe(
+        takeUntil(this._unsubscribeSub$),
+        catchError((error) => {
           this.showGeneralError(error);
-        },
+          return of('error');
+        })
+      )
+      .subscribe(() => {
+        this.notificationService.show(`Expense "${expense.name}" added.`);
+        this.reset();
       });
   }
 
   update(expense: Expense): void {
-    this.expensesService
-      .update(expense)
-      .pipe(takeUntil(this._unsubscribeSub$))
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Expense "${expense.name}" updated.`);
-          this.reset();
-        },
-        error: (error): void => {
+    this.budgetsService
+      .updateExpense(expense)
+      .pipe(
+        takeUntil(this._unsubscribeSub$),
+        catchError((error) => {
           this.showGeneralError(error);
-        },
+          return of('error');
+        })
+      )
+      .subscribe(() => {
+        this.notificationService.show(`Expense "${expense.name}" updated.`);
+        this.reset();
       });
   }
 
@@ -146,19 +163,18 @@ export class ExpensesComponent implements OnDestroy {
             return EMPTY;
           }
 
-          return this.expensesService.delete(expenseId);
+          return this.budgetsService.deleteExpense(expenseId);
+        }),
+        catchError((error) => {
+          this.showGeneralError(error);
+          return of('error');
         })
       )
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show(`Expense "${expenseName}" deleted.`);
-          if (this.currentExpense.id === expenseId) {
-            this.reset();
-          }
-        },
-        error: (error): void => {
-          this.showGeneralError(error);
-        },
+      .subscribe(() => {
+        this.notificationService.show(`Expense "${expenseName}" deleted.`);
+        if (this.currentId === expenseId) {
+          this.reset();
+        }
       });
   }
 
@@ -178,29 +194,27 @@ export class ExpensesComponent implements OnDestroy {
             return EMPTY;
           }
 
-          return this.expensesService.loadSampleData();
+          return this.budgetsService.loadSampleData();
+        }),
+        catchError((error) => {
+          this.showGeneralError(error);
+          return of('error');
         })
       )
-      .subscribe({
-        next: (): void => {
-          this.notificationService.show('Sample data loaded.');
-          this.reset();
-        },
-        error: (error): void => {
-          this.showGeneralError(error);
-        },
+      .subscribe(() => {
+        this.notificationService.show('Sample data loaded.');
+        this.reset();
       });
   }
 
   reset(): void {
-    this.setCurrent({ expense: this.emptyExpense });
-    this.form.reset();
-    this.form.patchValue(this.emptyExpense);
-    this.setMode('Create');
+    this.setCurrentId({ expense: this.emptyExpense });
+    this.form.reset(this.emptyExpense);
+    this.setFormState(FormState.Create);
   }
 
-  setMode(mode: string): void {
-    this.mode = mode;
+  setFormState(formState: FormState): void {
+    this.formState = formState;
   }
 
   showGeneralError(error: unknown) {

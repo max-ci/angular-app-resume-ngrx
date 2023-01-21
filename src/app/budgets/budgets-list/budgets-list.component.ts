@@ -18,7 +18,7 @@ export class BudgetsListComponent {
   faTrash: IconDefinition = faTrash;
 
   @Input() budgets: Budget[];
-  @Input() currentBudget: Budget;
+  @Input() currentId: string;
 
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();

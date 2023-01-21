@@ -11,6 +11,7 @@ import {
   faUndo,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
+import { FormState } from 'src/app/common/enums/FormState';
 
 @Component({
   selector: 'app-budget-details',
@@ -23,7 +24,7 @@ export class BudgetDetailsComponent {
   faUndo: IconDefinition = faUndo;
 
   @Input() form: FormGroup;
-  @Input() mode: string;
+  @Input() formState: FormState;
 
   @Output() saved = new EventEmitter();
   @Output() reseted = new EventEmitter();

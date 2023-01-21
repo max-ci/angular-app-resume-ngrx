@@ -18,9 +18,7 @@
       [ngStyle]="{
         'border-left-color': budget.color,
         'box-shadow':
-          budget.id === currentBudget.id
-            ? '0 0 0 0.1rem ' + budget.color
-            : 'none'
+          budget.id === currentId ? '0 0 0 0.1rem ' + budget.color : 'none'
       }"
       (click)="this.selected.emit(budget)"
     >
