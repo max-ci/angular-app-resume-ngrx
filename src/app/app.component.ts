@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
@@ -12,7 +12,7 @@ import { AuthService } from './common/services/auth.service';
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   isLoggedIn$: Observable<User | null> = this.auth.authState;
 
   links: Link[] = [
@@ -39,6 +39,10 @@ export class AppComponent {
     public router: Router,
     private auth: AngularFireAuth
   ) {}
+
+  ngOnInit() {
+    this.router.navigate(['/home']);
+  }
 
   logout(): void {
     this.authService.logout();
