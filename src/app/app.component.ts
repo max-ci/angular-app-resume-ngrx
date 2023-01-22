@@ -41,7 +41,9 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.router.navigate(['/home']);
+    if (this.router.url === '/') {
+      this.router.navigate(['/home']);
+    }
   }
 
   logout(): void {
