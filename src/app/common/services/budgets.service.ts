@@ -173,13 +173,26 @@ export class BudgetsService {
           return actions?.[0]?.payload?.doc?.id;
         }),
         switchMap((documentId: string) => {
-          return this.expensesCol.doc<Budget>(documentId).update(expense);
+          return this.expensesCol.doc<Expense>(documentId).update(expense);
         })
       );
   }
 
   deleteExpense(id: string) {
-    return of(this.expensesCol.doc<Budget>(id).delete());
+    return this.afs
+      .collection<Expense>(this.expensesColName, (ref) =>
+        ref.where('id', '==', id)
+      )
+      .snapshotChanges()
+      .pipe(
+        take(1),
+        map((actions) => {
+          return actions?.[0]?.payload?.doc?.id;
+        }),
+        switchMap((documentId: string) => {
+          return this.expensesCol.doc<Expense>(documentId).delete();
+        })
+      );
   }
 
   setSearchString(searchString: string) {
