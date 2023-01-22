@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +23,10 @@ import { DialogModule, DialogRef } from '@angular/cdk/dialog';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { environment } from '../environments/environment';
 import { StoreModule } from '@ngrx/store';
+import { budgetsReducer } from './common/state/reducers/budget.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { BudgetEffects } from './common/state/effects/budget.effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 const firebaseConfig = {
   apiKey: environment.firebase.apiKey,
@@ -59,7 +63,14 @@ const firebaseConfig = {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     FontAwesomeModule,
-    StoreModule.forRoot({}, {}),
+    StoreModule.forRoot({ budgets: budgetsReducer }),
+    EffectsModule.forRoot([BudgetEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: !isDevMode(),
+      trace: true,
+      traceLimit: 25,
+    }),
   ],
   providers: [{ provide: DialogRef, useValue: {} }],
   bootstrap: [AppComponent],

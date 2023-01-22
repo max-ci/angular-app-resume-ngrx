@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnDestroy,
+  OnInit,
   TemplateRef,
   ViewChild,
 } from '@angular/core';
@@ -9,7 +10,6 @@ import { Budget } from '../common/interfaces/budget';
 import { BudgetsService } from '../common/services/budgets.service';
 import { NotificationService } from '../common/services/notification.service';
 import {
-  BehaviorSubject,
   catchError,
   EMPTY,
   Observable,
@@ -21,6 +21,8 @@ import {
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormState } from '../common/enums/FormState';
+import { Store } from '@ngrx/store';
+import { selectAllBudgets } from '../common/state/reducers/budget.reducer';
 
 @Component({
   selector: 'app-budgets',
@@ -28,10 +30,10 @@ import { FormState } from '../common/enums/FormState';
   styleUrls: ['./budgets.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BudgetsComponent implements OnDestroy {
-  public readonly budgets$: Observable<Budget[]>;
+export class BudgetsComponent implements OnInit, OnDestroy {
+  public readonly budgets$: Observable<Budget[]> =
+    this.store.select(selectAllBudgets);
   private readonly _unsubscribeSub$: Subject<void>;
-  private readonly currentId$: BehaviorSubject<void>;
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
 
@@ -60,15 +62,17 @@ export class BudgetsComponent implements OnDestroy {
   public formState: FormState = FormState.Create;
 
   constructor(
+    private store: Store<{ budgets: Budget[] }>,
     private budgetsService: BudgetsService,
     private notificationService: NotificationService,
     private formBuilder: FormBuilder,
     private dialog: Dialog,
     public dialogRef: DialogRef<boolean>
   ) {
-    this.budgets$ = this.budgetsService.budgets$;
     this._unsubscribeSub$ = new Subject<void>();
   }
+
+  ngOnInit(): void {}
 
   ngOnDestroy(): void {
     this._unsubscribeSub$.next();

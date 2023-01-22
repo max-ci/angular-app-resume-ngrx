@@ -42,11 +42,6 @@ export class BudgetsService {
     );
 
   constructor(private afs: AngularFirestore) {
-    this.budgets$ = this.budgetsCol.valueChanges().pipe(
-      catchError(() => of([])),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
-
     this.expenses$ = combineLatest({
       budgets: this.budgetsCol.valueChanges(),
       expenses: this.searchString$.pipe(
@@ -81,6 +76,10 @@ export class BudgetsService {
       catchError(() => of([])),
       shareReplay({ bufferSize: 1, refCount: true })
     );
+  }
+
+  getAll() {
+    return this.budgetsCol.stateChanges();
   }
 
   get(id: string) {
