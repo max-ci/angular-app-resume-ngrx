@@ -23,7 +23,6 @@ import { Expense } from '../interfaces/expense.interface';
   providedIn: 'root',
 })
 export class BudgetsService {
-  readonly budgets$: Observable<Budget[]>;
   readonly expenses$: Observable<Budget[]>;
   private readonly _searchString$: BehaviorSubject<string> =
     new BehaviorSubject('');

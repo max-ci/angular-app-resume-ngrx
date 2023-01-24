@@ -35,7 +35,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     this._store.select(selectAllBudgets);
   private readonly _unsubscribeSub$: Subject<void>;
 
-  @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
+  @ViewChild('dialogTemplate') dialogTemplate!: TemplateRef<any>;
 
   private readonly _emptyBudget: Budget = {
     id: '',
@@ -148,7 +148,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     this.dialogRef.closed
       .pipe(
         takeUntil(this._unsubscribeSub$),
-        switchMap((result: boolean) => {
+        switchMap((result) => {
           if (!result) {
             return EMPTY;
           }
@@ -179,7 +179,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     this.dialogRef.closed
       .pipe(
         takeUntil(this._unsubscribeSub$),
-        switchMap((result: boolean) => {
+        switchMap((result) => {
           if (!result) {
             return EMPTY;
           }

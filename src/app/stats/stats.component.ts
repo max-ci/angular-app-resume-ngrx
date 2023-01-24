@@ -18,7 +18,7 @@ import { BudgetsService } from '../shared/services/budgets.service';
 })
 export class StatsComponent implements OnInit {
   readonly expenses$: Observable<Budget[]>;
-  stats$: Observable<Stat[]>;
+  stats$: Observable<Stat[]> | undefined;
 
   @Input() mode: string = '';
 
@@ -40,11 +40,13 @@ export class StatsComponent implements OnInit {
         const budgets = data;
 
         const stats = budgets.map((budget: Budget) => {
-          const expensesValue = budget.expenses.reduce(
-            (previousValue: number, currentValue: Expense) =>
-              previousValue + currentValue.price * currentValue.amount,
-            0
-          );
+          const expensesValue = budget.expenses
+            ? budget.expenses.reduce(
+                (previousValue: number, currentValue: Expense) =>
+                  previousValue + currentValue.price * currentValue.amount,
+                0
+              )
+            : 0;
           const ratio =
             budget.value === 0 ? 0 : (expensesValue / budget.value) * 100;
 
@@ -81,11 +83,13 @@ export class StatsComponent implements OnInit {
       (previousValue: number, budget: Budget) => {
         return (
           previousValue +
-          budget.expenses.reduce(
-            (previousValue: number, expense: Expense) =>
-              previousValue + expense.price * expense.amount,
-            0
-          )
+          (budget.expenses
+            ? budget.expenses.reduce(
+                (previousValue: number, expense: Expense) =>
+                  previousValue + expense.price * expense.amount,
+                0
+              )
+            : 0)
         );
       },
       0

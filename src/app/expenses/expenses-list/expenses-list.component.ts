@@ -18,9 +18,9 @@ import { faTrash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 export class ExpensesListComponent {
   faTrash: IconDefinition = faTrash;
 
-  @Input() budgets: Budget[] = [];
-  @Input() currentId: string;
-  @Input() mode: string = '';
+  @Input() budgets: Budget[] | null | undefined;
+  @Input() currentId: string | undefined;
+  @Input() mode: string | undefined;
 
   @Output() selected = new EventEmitter();
   @Output() deleted = new EventEmitter();

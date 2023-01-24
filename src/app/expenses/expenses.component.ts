@@ -32,7 +32,7 @@ export class ExpensesComponent implements OnDestroy {
   readonly budgets$: Observable<Budget[]>;
   private readonly _unsubscribeSub$: Subject<void>;
 
-  @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
+  @ViewChild('dialogTemplate') dialogTemplate!: TemplateRef<any>;
 
   private readonly _emptyExpense: Expense = {
     id: '',
@@ -158,7 +158,7 @@ export class ExpensesComponent implements OnDestroy {
     this.dialogRef.closed
       .pipe(
         takeUntil(this._unsubscribeSub$),
-        switchMap((result: boolean) => {
+        switchMap((result) => {
           if (!result) {
             return EMPTY;
           }
@@ -189,7 +189,7 @@ export class ExpensesComponent implements OnDestroy {
     this.dialogRef.closed
       .pipe(
         takeUntil(this._unsubscribeSub$),
-        switchMap((result: boolean) => {
+        switchMap((result) => {
           if (!result) {
             return EMPTY;
           }

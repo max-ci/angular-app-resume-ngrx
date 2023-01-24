@@ -23,8 +23,8 @@ export class BudgetDetailsComponent {
   faSave: IconDefinition = faSave;
   faUndo: IconDefinition = faUndo;
 
-  @Input() form: FormGroup;
-  @Input() formState: FormState;
+  @Input() form!: FormGroup;
+  @Input() formState: FormState | undefined;
 
   @Output() saved = new EventEmitter();
   @Output() reseted = new EventEmitter();

@@ -24,9 +24,9 @@ export class ExpenseDetailsComponent {
   faSave: IconDefinition = faSave;
   faUndo: IconDefinition = faUndo;
 
-  @Input() form: FormGroup;
-  @Input() budgets: Budget[] = [];
-  @Input() formState: FormState;
+  @Input() form: FormGroup | undefined;
+  @Input() budgets: Budget[] | null | undefined;
+  @Input() formState: FormState | undefined;
 
   @Output() saved = new EventEmitter();
   @Output() reseted = new EventEmitter();

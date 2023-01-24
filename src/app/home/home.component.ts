@@ -23,23 +23,23 @@ import { BudgetsService } from '../shared/services/budgets.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  readonly expenses$: Observable<Budget[]>;
+  expenses$: Observable<Budget[]> | undefined;
   readonly search: FormControl = new FormControl('');
   readonly searchLoading$: BehaviorSubject<boolean> = new BehaviorSubject(
     false
   );
-  private search$: Subscription;
+  private _search$: Subscription | undefined;
 
-  constructor(private _budgetsService: BudgetsService) {
+  constructor(private _budgetsService: BudgetsService) {}
+
+  ngOnInit() {
     this.expenses$ = this._budgetsService.expenses$.pipe(
       tap(() => {
         this.searchLoading$.next(false);
       })
     );
-  }
 
-  ngOnInit() {
-    this.search$ = this.search.valueChanges
+    this._search$ = this.search.valueChanges
       .pipe(
         debounceTime(300),
         distinctUntilChanged(),
@@ -53,6 +53,8 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this._budgetsService.setSearchString('');
-    this.search$.unsubscribe();
+    if (this._search$) {
+      this._search$.unsubscribe();
+    }
   }
 }

@@ -12,7 +12,7 @@ import { NotificationService } from 'src/app/shared/services/notification.servic
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
-  form: FormGroup;
+  form!: FormGroup;
   submitDisabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
     false
   );
