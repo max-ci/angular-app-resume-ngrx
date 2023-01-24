@@ -12,7 +12,7 @@ import {
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
 import { FormGroup } from '@angular/forms';
-import { FormState } from 'src/app/shared/enums/FormState';
+import { FormState } from 'src/app/shared/enums/form-state.enum';
 
 @Component({
   selector: 'app-expense-details',

@@ -19,7 +19,7 @@ import { Budget } from '../shared/interfaces/budget.interface';
 import { Expense } from '../shared/interfaces/expense.interface';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { NotificationService } from '../shared/services/notification.service';
-import { FormState } from '../shared/enums/FormState';
+import { FormState } from '../shared/enums/form-state.enum';
 import { BudgetsService } from '../shared/services/budgets.service';
 
 @Component({

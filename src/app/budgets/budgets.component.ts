@@ -20,7 +20,7 @@ import {
 } from 'rxjs';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormState } from '../shared/enums/FormState';
+import { FormState } from '../shared/enums/form-state.enum';
 import { Store } from '@ngrx/store';
 import { selectAllBudgets } from '../shared/state/reducers/budget.reducer';
 
