@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { createFeatureSelector, createReducer, on } from '@ngrx/store';
-import { Budget } from 'src/app/common/interfaces/budget';
+import { Budget } from 'src/app/common/interfaces/budget.interface';
 import {
   BudgetsDataAdded,
   BudgetsDataModified,

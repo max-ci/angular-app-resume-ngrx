@@ -6,7 +6,7 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Budget } from '../common/interfaces/budget';
+import { Budget } from '../common/interfaces/budget.interface';
 import { BudgetsService } from '../common/services/budgets.service';
 import { NotificationService } from '../common/services/notification.service';
 import {

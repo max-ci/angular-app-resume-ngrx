@@ -5,8 +5,8 @@ import {
   Input,
   Output,
 } from '@angular/core';
-import { Budget } from 'src/app/common/interfaces/budget';
-import { Expense } from 'src/app/common/interfaces/expense';
+import { Budget } from 'src/app/common/interfaces/budget.interface';
+import { Expense } from 'src/app/common/interfaces/expense.interface';
 import { faTrash, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 @Component({

@@ -3,7 +3,7 @@ import { User } from '@angular/fire/auth';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { Link } from './common/interfaces/link';
+import { Link } from './common/interfaces/link.interface';
 import { AuthService } from './common/services/auth.service';
 
 @Component({

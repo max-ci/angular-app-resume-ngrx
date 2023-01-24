@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Budget } from '../interfaces/budget';
+import { Budget } from '../interfaces/budget.interface';
 import { v4 as uuidv4 } from 'uuid';
 import { budgetsData, expensesData } from '../data/budgets.data';
 import {
@@ -17,7 +17,7 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
-import { Expense } from '../interfaces/expense';
+import { Expense } from '../interfaces/expense.interface';
 
 @Injectable({
   providedIn: 'root',

@@ -15,8 +15,8 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { Budget } from '../common/interfaces/budget';
-import { Expense } from '../common/interfaces/expense';
+import { Budget } from '../common/interfaces/budget.interface';
+import { Expense } from '../common/interfaces/expense.interface';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { NotificationService } from '../common/services/notification.service';
 import { FormState } from '../common/enums/FormState';

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Notification } from 'src/app/common/interfaces/notification';
+import { Notification } from 'src/app/common/interfaces/notification.interface';
 import { NotificationService } from 'src/app/common/services/notification.service';
 
 @Component({

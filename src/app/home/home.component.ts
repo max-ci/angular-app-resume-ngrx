@@ -13,7 +13,7 @@ import {
   Subscription,
   tap,
 } from 'rxjs';
-import { Budget } from '../common/interfaces/budget';
+import { Budget } from '../common/interfaces/budget.interface';
 import { BudgetsService } from '../common/services/budgets.service';
 
 @Component({

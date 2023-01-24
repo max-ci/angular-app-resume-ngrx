@@ -1,5 +1,5 @@
-import { Budget } from '../interfaces/budget';
-import { Expense } from '../interfaces/expense';
+import { Budget } from '../interfaces/budget.interface';
+import { Expense } from '../interfaces/expense.interface';
 
 export const budgetsData: Budget[] = [
   {

@@ -5,9 +5,9 @@ import {
   OnInit,
 } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Stat } from '../common/interfaces/stat';
-import { Budget } from '../common/interfaces/budget';
-import { Expense } from '../common/interfaces/expense';
+import { Stat } from '../common/interfaces/stat.interface';
+import { Budget } from '../common/interfaces/budget.interface';
+import { Expense } from '../common/interfaces/expense.interface';
 import { BudgetsService } from '../common/services/budgets.service';
 
 @Component({
