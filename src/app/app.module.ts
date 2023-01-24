@@ -9,16 +9,9 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { HttpClientModule } from '@angular/common/http';
 import { environment } from '../environments/environment';
 import { StoreModule } from '@ngrx/store';
-import { budgetsReducer } from './shared/state/reducers/budget.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import { BudgetEffects } from './shared/state/effects/budget.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { BudgetsModule } from './budgets/budgets.module';
 import { SharedModule } from './shared/modules/shared.module';
-import { HomeModule } from './home/home.module';
-import { ExpensesModule } from './expenses/expenses.module';
-import { StatsModule } from './stats/stats.module';
-import { LoginModule } from './auth/login/login.module';
 import { NotificationsComponent } from './notifications/notifications.component';
 
 const firebaseConfig = {
@@ -36,11 +29,6 @@ const firebaseConfig = {
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    LoginModule,
-    HomeModule,
-    BudgetsModule,
-    ExpensesModule,
-    StatsModule,
     SharedModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot([]),

@@ -36,38 +36,49 @@ const redirectNotLoggedInToLogin = () => redirectUnauthorizedTo(['login']);
 
 const routes: Routes = [
   {
-    path: '',
-    canActivate: [AngularFireAuthGuard],
-    data: { authGuardPipe: redirectNotLoggedInToLogin },
-    children: [
-      {
-        path: 'home',
-        title: 'Home',
-        component: HomeComponent,
-      },
-      {
-        path: 'expenses',
-        title: 'Expenses',
-        component: ExpensesComponent,
-      },
-      {
-        path: 'budgets',
-        title: 'Budgets',
-        component: BudgetsComponent,
-      },
-      {
-        path: 'stats',
-        title: 'Stats',
-        component: StatsComponent,
-      },
-    ],
-  },
-  {
     path: 'login',
     title: 'Login',
     canActivate: [AngularFireAuthGuard],
     data: { authGuardPipe: redirectLoggedInToHome },
     component: LoginComponent,
+    loadChildren: () =>
+      import('./auth/login/login.module').then((m) => m.LoginModule),
+  },
+  {
+    path: 'home',
+    title: 'Home',
+    component: HomeComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectNotLoggedInToLogin },
+    loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
+  },
+  {
+    path: 'budgets',
+    title: 'Budgets',
+    component: BudgetsComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectNotLoggedInToLogin },
+    loadChildren: () =>
+      import('./budgets/budgets.module').then((m) => m.BudgetsModule),
+  },
+  {
+    path: 'expenses',
+    title: 'Expenses',
+    component: ExpensesComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectNotLoggedInToLogin },
+    loadChildren: () =>
+      import('./expenses/expenses.module').then((m) => m.ExpensesModule),
+  },
+
+  {
+    path: 'stats',
+    title: 'Stats',
+    component: StatsComponent,
+    canActivate: [AngularFireAuthGuard],
+    data: { authGuardPipe: redirectNotLoggedInToLogin },
+    loadChildren: () =>
+      import('./stats/stats.module').then((m) => m.StatsModule),
   },
   {
     path: '**',
