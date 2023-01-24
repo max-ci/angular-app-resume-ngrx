@@ -13,8 +13,8 @@ import {
   Subscription,
   tap,
 } from 'rxjs';
-import { Budget } from '../common/interfaces/budget.interface';
-import { BudgetsService } from '../common/services/budgets.service';
+import { Budget } from '../shared/interfaces/budget.interface';
+import { BudgetsService } from '../shared/services/budgets.service';
 
 @Component({
   selector: 'app-home',

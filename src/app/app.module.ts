@@ -1,32 +1,25 @@
 import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
-import { StatsComponent } from './stats/stats.component';
-import { BudgetsComponent } from './budgets/budgets.component';
-import { ExpensesComponent } from './expenses/expenses.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ExpensesListComponent } from './expenses/expenses-list/expenses-list.component';
-import { BudgetsListComponent } from './budgets/budgets-list/budgets-list.component';
-import { BudgetDetailsComponent } from './budgets/budget-details/budget-details.component';
-import { ExpenseDetailsComponent } from './expenses/expense-details/expense-details.component';
-import { LoginComponent } from './auth/login/login.component';
-import { NotificationsComponent } from './notifications/notifications/notifications.component';
 import { AngularFireModule } from '@angular/fire/compat';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { HttpClientModule } from '@angular/common/http';
-import { DialogModule, DialogRef } from '@angular/cdk/dialog';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { environment } from '../environments/environment';
 import { StoreModule } from '@ngrx/store';
-import { budgetsReducer } from './common/state/reducers/budget.reducer';
+import { budgetsReducer } from './shared/state/reducers/budget.reducer';
 import { EffectsModule } from '@ngrx/effects';
-import { BudgetEffects } from './common/state/effects/budget.effects';
+import { BudgetEffects } from './shared/state/effects/budget.effects';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { BudgetsModule } from './budgets/budgets.module';
+import { SharedModule } from './shared/modules/shared.module';
+import { HomeModule } from './home/home.module';
+import { ExpensesModule } from './expenses/expenses.module';
+import { StatsModule } from './stats/stats.module';
+import { LoginModule } from './auth/login/login.module';
+import { NotificationsComponent } from './notifications/notifications.component';
 
 const firebaseConfig = {
   apiKey: environment.firebase.apiKey,
@@ -38,33 +31,23 @@ const firebaseConfig = {
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    StatsComponent,
-    BudgetsComponent,
-    ExpensesComponent,
-    ExpensesListComponent,
-    BudgetsListComponent,
-    BudgetDetailsComponent,
-    ExpenseDetailsComponent,
-    LoginComponent,
-    NotificationsComponent,
-  ],
+  declarations: [AppComponent, NotificationsComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
     HttpClientModule,
-    ReactiveFormsModule,
-    DialogModule,
+    LoginModule,
+    HomeModule,
+    BudgetsModule,
+    ExpensesModule,
+    StatsModule,
+    SharedModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot([]),
     AngularFireModule.initializeApp(firebaseConfig),
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    FontAwesomeModule,
-    StoreModule.forRoot({ budgets: budgetsReducer }),
-    EffectsModule.forRoot([BudgetEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: !isDevMode(),
@@ -72,7 +55,6 @@ const firebaseConfig = {
       traceLimit: 25,
     }),
   ],
-  providers: [{ provide: DialogRef, useValue: {} }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

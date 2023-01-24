@@ -11,7 +11,7 @@ import {
   faUndo,
   IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
-import { FormState } from 'src/app/common/enums/FormState';
+import { FormState } from 'src/app/shared/enums/FormState';
 
 @Component({
   selector: 'app-budget-details',

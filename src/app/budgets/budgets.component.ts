@@ -6,9 +6,9 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core';
-import { Budget } from '../common/interfaces/budget.interface';
-import { BudgetsService } from '../common/services/budgets.service';
-import { NotificationService } from '../common/services/notification.service';
+import { Budget } from '../shared/interfaces/budget.interface';
+import { BudgetsService } from '../shared/services/budgets.service';
+import { NotificationService } from '../shared/services/notification.service';
 import {
   catchError,
   EMPTY,
@@ -20,9 +20,9 @@ import {
 } from 'rxjs';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormState } from '../common/enums/FormState';
+import { FormState } from '../shared/enums/FormState';
 import { Store } from '@ngrx/store';
-import { selectAllBudgets } from '../common/state/reducers/budget.reducer';
+import { selectAllBudgets } from '../shared/state/reducers/budget.reducer';
 
 @Component({
   selector: 'app-budgets',

@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Budget } from 'src/app/common/interfaces/budget.interface';
+import { Budget } from 'src/app/shared/interfaces/budget.interface';
 
 export enum BudgetsActionTypes {
   BUDGETS_DATA_ADDED = '[Budgets Data] added',

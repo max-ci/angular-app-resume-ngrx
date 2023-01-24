@@ -5,10 +5,10 @@ import {
   OnInit,
 } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Stat } from '../common/interfaces/stat.interface';
-import { Budget } from '../common/interfaces/budget.interface';
-import { Expense } from '../common/interfaces/expense.interface';
-import { BudgetsService } from '../common/services/budgets.service';
+import { Stat } from '../shared/interfaces/stat.interface';
+import { Budget } from '../shared/interfaces/budget.interface';
+import { Expense } from '../shared/interfaces/expense.interface';
+import { BudgetsService } from '../shared/services/budgets.service';
 
 @Component({
   selector: 'app-stats',

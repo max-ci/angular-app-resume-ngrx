@@ -15,12 +15,12 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs';
-import { Budget } from '../common/interfaces/budget.interface';
-import { Expense } from '../common/interfaces/expense.interface';
+import { Budget } from '../shared/interfaces/budget.interface';
+import { Expense } from '../shared/interfaces/expense.interface';
 import { Dialog, DialogRef } from '@angular/cdk/dialog';
-import { NotificationService } from '../common/services/notification.service';
-import { FormState } from '../common/enums/FormState';
-import { BudgetsService } from '../common/services/budgets.service';
+import { NotificationService } from '../shared/services/notification.service';
+import { FormState } from '../shared/enums/FormState';
+import { BudgetsService } from '../shared/services/budgets.service';
 
 @Component({
   selector: 'app-expenses',
