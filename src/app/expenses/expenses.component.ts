@@ -34,7 +34,7 @@ export class ExpensesComponent implements OnDestroy {
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
 
-  private readonly emptyExpense: Expense = {
+  private readonly _emptyExpense: Expense = {
     id: '',
     budgetId: '',
     name: '',
@@ -42,14 +42,14 @@ export class ExpensesComponent implements OnDestroy {
     price: 0,
   };
 
-  currentId: string = this.emptyExpense.id;
+  currentId: string = this._emptyExpense.id;
   formState: FormState = FormState.Create;
 
-  form: FormGroup = this.formBuilder.group({
-    id: [this.emptyExpense.id],
-    name: [this.emptyExpense.name, Validators.required],
+  form: FormGroup = this._formBuilder.group({
+    id: [this._emptyExpense.id],
+    name: [this._emptyExpense.name, Validators.required],
     price: [
-      this.emptyExpense.price,
+      this._emptyExpense.price,
       [
         Validators.required,
         Validators.min(1),
@@ -57,24 +57,24 @@ export class ExpensesComponent implements OnDestroy {
       ],
     ],
     amount: [
-      this.emptyExpense.amount,
+      this._emptyExpense.amount,
       [
         Validators.required,
         Validators.min(1),
         Validators.pattern(/^[0-9]\d*$/),
       ],
     ],
-    budgetId: [this.emptyExpense.budgetId, Validators.required],
+    budgetId: [this._emptyExpense.budgetId, Validators.required],
   });
 
   constructor(
-    private budgetsService: BudgetsService,
-    private notificationService: NotificationService,
-    private formBuilder: FormBuilder,
-    private dialog: Dialog,
+    private _budgetsService: BudgetsService,
+    private _notificationService: NotificationService,
+    private _formBuilder: FormBuilder,
+    private _dialog: Dialog,
     public dialogRef: DialogRef<boolean>
   ) {
-    this.budgets$ = this.budgetsService.expenses$;
+    this.budgets$ = this._budgetsService.expenses$;
     this._unsubscribeSub$ = new Subject<void>();
   }
 
@@ -110,7 +110,7 @@ export class ExpensesComponent implements OnDestroy {
   }
 
   create(expense: Expense): void {
-    this.budgetsService
+    this._budgetsService
       .createExpense(expense)
       .pipe(
         takeUntil(this._unsubscribeSub$),
@@ -120,13 +120,13 @@ export class ExpensesComponent implements OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Expense "${expense.name}" added.`);
+        this._notificationService.show(`Expense "${expense.name}" added.`);
         this.reset();
       });
   }
 
   update(expense: Expense): void {
-    this.budgetsService
+    this._budgetsService
       .updateExpense(expense)
       .pipe(
         takeUntil(this._unsubscribeSub$),
@@ -136,7 +136,7 @@ export class ExpensesComponent implements OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Expense "${expense.name}" updated.`);
+        this._notificationService.show(`Expense "${expense.name}" updated.`);
         this.reset();
       });
   }
@@ -148,7 +148,7 @@ export class ExpensesComponent implements OnDestroy {
     expenseId: string;
     expenseName: string;
   }): void {
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {
+    this.dialogRef = this._dialog.open(this.dialogTemplate, {
       data: {
         text: `Are you sure you want to delete ${expenseName} expense?`,
         buttonText: 'Delete',
@@ -163,7 +163,7 @@ export class ExpensesComponent implements OnDestroy {
             return EMPTY;
           }
 
-          return this.budgetsService.deleteExpense(expenseId);
+          return this._budgetsService.deleteExpense(expenseId);
         }),
         catchError((error) => {
           this.showGeneralError(error);
@@ -171,7 +171,7 @@ export class ExpensesComponent implements OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Expense "${expenseName}" deleted.`);
+        this._notificationService.show(`Expense "${expenseName}" deleted.`);
         if (this.currentId === expenseId) {
           this.reset();
         }
@@ -179,7 +179,7 @@ export class ExpensesComponent implements OnDestroy {
   }
 
   loadSampleData(): void {
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {
+    this.dialogRef = this._dialog.open(this.dialogTemplate, {
       data: {
         text: `Are you sure you want to load sample data? All your data will be replaced.`,
         buttonText: 'Load sample data',
@@ -194,7 +194,7 @@ export class ExpensesComponent implements OnDestroy {
             return EMPTY;
           }
 
-          return this.budgetsService.loadSampleData();
+          return this._budgetsService.loadSampleData();
         }),
         catchError((error) => {
           this.showGeneralError(error);
@@ -202,14 +202,14 @@ export class ExpensesComponent implements OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show('Sample data loaded.');
+        this._notificationService.show('Sample data loaded.');
         this.reset();
       });
   }
 
   reset(): void {
-    this.setCurrentId({ expense: this.emptyExpense });
-    this.form.reset(this.emptyExpense);
+    this.setCurrentId({ expense: this._emptyExpense });
+    this.form.reset(this._emptyExpense);
     this.setFormState(FormState.Create);
   }
 
@@ -218,7 +218,7 @@ export class ExpensesComponent implements OnDestroy {
   }
 
   showGeneralError(error: unknown) {
-    this.notificationService.show('An error occured', 'danger');
+    this._notificationService.show('An error occured', 'danger');
     console.error(error);
   }
 }

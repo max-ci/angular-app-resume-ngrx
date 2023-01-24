@@ -8,13 +8,13 @@ import { BudgetsService } from '../../services/budgets.service';
 @Injectable()
 export class BudgetEffects {
   budgets$ = createEffect(() =>
-    this.authService.userToken$.pipe(
+    this._authService.userToken$.pipe(
       switchMap((token: string) => {
         if (!token) {
           return EMPTY;
         }
 
-        return this.budgetsService.getAll().pipe(
+        return this._budgetsService.getAll().pipe(
           mergeMap((actions) => actions),
           map((action) => {
             return {
@@ -31,7 +31,7 @@ export class BudgetEffects {
   );
 
   constructor(
-    private budgetsService: BudgetsService,
-    private authService: AuthService
+    private _budgetsService: BudgetsService,
+    private _authService: AuthService
   ) {}
 }

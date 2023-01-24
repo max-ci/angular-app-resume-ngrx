@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class HttpClientService {
-  constructor(private http: HttpClient) {}
+  constructor(private _http: HttpClient) {}
 
   createAuthorizationHeader(headers: HttpHeaders, token: string): HttpHeaders {
     return headers.set('Authorization', `Bearer ${token}`);
@@ -15,7 +15,7 @@ export class HttpClientService {
   get(url: string, token: string): Observable<Object> {
     let headers = new HttpHeaders();
     headers = this.createAuthorizationHeader(headers, token);
-    return this.http.get(url, {
+    return this._http.get(url, {
       headers: headers,
     });
   }
@@ -23,13 +23,13 @@ export class HttpClientService {
   post(url: string, data: any | null, token: string): Observable<Object> {
     let headers = new HttpHeaders();
     headers = this.createAuthorizationHeader(headers, token);
-    return this.http.post(url, data, { headers });
+    return this._http.post(url, data, { headers });
   }
 
   delete(url: string, token: string): Observable<Object> {
     let headers = new HttpHeaders();
     headers = this.createAuthorizationHeader(headers, token);
-    return this.http.delete(url, {
+    return this._http.delete(url, {
       headers: headers,
     });
   }

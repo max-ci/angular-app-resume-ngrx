@@ -31,7 +31,8 @@ import { selectAllBudgets } from '../common/state/reducers/budget.reducer';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BudgetsComponent implements OnInit, OnDestroy {
-  readonly budgets$: Observable<Budget[]> = this.store.select(selectAllBudgets);
+  readonly budgets$: Observable<Budget[]> =
+    this._store.select(selectAllBudgets);
   private readonly _unsubscribeSub$: Subject<void>;
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
@@ -44,7 +45,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   };
   currentId: string = this._emptyBudget.id;
 
-  form: FormGroup = this.formBuilder.group({
+  form: FormGroup = this._formBuilder.group({
     id: [this._emptyBudget.id],
     name: [this._emptyBudget.name, Validators.required],
     color: [this._emptyBudget.color, Validators.required],
@@ -61,11 +62,11 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   formState: FormState = FormState.Create;
 
   constructor(
-    private store: Store<{ budgets: Budget[] }>,
-    private budgetsService: BudgetsService,
-    private notificationService: NotificationService,
-    private formBuilder: FormBuilder,
-    private dialog: Dialog,
+    private _store: Store<{ budgets: Budget[] }>,
+    private _budgetsService: BudgetsService,
+    private _notificationService: NotificationService,
+    private _formBuilder: FormBuilder,
+    private _dialog: Dialog,
     public dialogRef: DialogRef<boolean>
   ) {
     this._unsubscribeSub$ = new Subject<void>();
@@ -105,7 +106,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   }
 
   create(budget: Budget): void {
-    this.budgetsService
+    this._budgetsService
       .create(budget)
       .pipe(
         takeUntil(this._unsubscribeSub$),
@@ -115,13 +116,13 @@ export class BudgetsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Budget "${budget.name}" added.`);
+        this._notificationService.show(`Budget "${budget.name}" added.`);
         this.reset();
       });
   }
 
   update(budget: Budget): void {
-    this.budgetsService
+    this._budgetsService
       .update(budget)
       .pipe(
         takeUntil(this._unsubscribeSub$),
@@ -131,13 +132,13 @@ export class BudgetsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Budget "${budget.name}" updated.`);
+        this._notificationService.show(`Budget "${budget.name}" updated.`);
         this.reset();
       });
   }
 
   delete({ id, name }: { id: string; name: string }): void {
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {
+    this.dialogRef = this._dialog.open(this.dialogTemplate, {
       data: {
         text: `Are you sure you want to delete ${name} budget?`,
         buttonText: 'Delete',
@@ -152,7 +153,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-          return this.budgetsService.delete(id);
+          return this._budgetsService.delete(id);
         }),
         catchError((error) => {
           this.showGeneralError(error);
@@ -160,7 +161,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show(`Budget "${name}" deleted.`);
+        this._notificationService.show(`Budget "${name}" deleted.`);
         if (this.currentId === id) {
           this.reset();
         }
@@ -168,7 +169,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   }
 
   loadSampleData(): void {
-    this.dialogRef = this.dialog.open(this.dialogTemplate, {
+    this.dialogRef = this._dialog.open(this.dialogTemplate, {
       data: {
         text: `Are you sure you want to load sample data? All your data will be replaced.`,
         buttonText: 'Load sample data',
@@ -183,7 +184,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
             return EMPTY;
           }
 
-          return this.budgetsService.loadSampleData();
+          return this._budgetsService.loadSampleData();
         }),
         catchError((error) => {
           this.showGeneralError(error);
@@ -191,7 +192,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
         })
       )
       .subscribe(() => {
-        this.notificationService.show('Sample data loaded.');
+        this._notificationService.show('Sample data loaded.');
         this.reset();
       });
   }
@@ -207,7 +208,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   }
 
   showGeneralError(error: unknown): void {
-    this.notificationService.show('An error occured', 'danger');
+    this._notificationService.show('An error occured', 'danger');
     console.error(error);
   }
 }

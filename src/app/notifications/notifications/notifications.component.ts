@@ -12,11 +12,11 @@ import { NotificationService } from 'src/app/common/services/notification.servic
 export class NotificationsComponent {
   notifications$: Observable<Notification[]>;
 
-  constructor(private notificationService: NotificationService) {
-    this.notifications$ = this.notificationService.notifications$;
+  constructor(private _notificationService: NotificationService) {
+    this.notifications$ = this._notificationService.notifications$;
   }
 
   hide(id: string): void {
-    this.notificationService.hide(id);
+    this._notificationService.hide(id);
   }
 }

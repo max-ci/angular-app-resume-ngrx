@@ -9,8 +9,8 @@ import { from, Observable, of, switchMap } from 'rxjs';
 export class AuthService {
   userToken$: Observable<string | null>;
 
-  constructor(private auth: AngularFireAuth, private router: Router) {
-    this.userToken$ = this.auth.authState.pipe(
+  constructor(private _auth: AngularFireAuth, private _router: Router) {
+    this.userToken$ = this._auth.authState.pipe(
       switchMap((user) => {
         if (user) {
           return from(user.getIdToken());
@@ -21,20 +21,20 @@ export class AuthService {
   }
 
   login(formValue: { login: string; password: string }) {
-    return this.auth.signInWithEmailAndPassword(
+    return this._auth.signInWithEmailAndPassword(
       formValue.login,
       formValue.password
     );
   }
 
   logout(): void {
-    this.auth
+    this._auth
       .signOut()
       .catch((error) => {
         console.error(error);
       })
       .then(() => {
-        this.router.navigateByUrl('login');
+        this._router.navigateByUrl('login');
       });
   }
 }

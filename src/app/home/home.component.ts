@@ -30,8 +30,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   );
   private search$: Subscription;
 
-  constructor(private budgetsService: BudgetsService) {
-    this.expenses$ = this.budgetsService.expenses$.pipe(
+  constructor(private _budgetsService: BudgetsService) {
+    this.expenses$ = this._budgetsService.expenses$.pipe(
       tap(() => {
         this.searchLoading$.next(false);
       })
@@ -45,14 +45,14 @@ export class HomeComponent implements OnInit, OnDestroy {
         distinctUntilChanged(),
         tap((searchString) => {
           this.searchLoading$.next(true);
-          this.budgetsService.setSearchString(searchString);
+          this._budgetsService.setSearchString(searchString);
         })
       )
       .subscribe();
   }
 
   ngOnDestroy() {
-    this.budgetsService.setSearchString('');
+    this._budgetsService.setSearchString('');
     this.search$.unsubscribe();
   }
 }

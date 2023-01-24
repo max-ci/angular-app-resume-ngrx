@@ -18,14 +18,14 @@ export class LoginComponent implements OnInit {
   );
 
   constructor(
-    private authService: AuthService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private notificationService: NotificationService
+    private _authService: AuthService,
+    private _formBuilder: FormBuilder,
+    private _router: Router,
+    private _notificationService: NotificationService
   ) {}
 
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
+    this.form = this._formBuilder.group({
       login: ['demo@demo.demo', Validators.required],
       password: ['demodemo', Validators.required],
     });
@@ -33,7 +33,7 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     this.submitDisabled$.next(true);
-    this.authService
+    this._authService
       .login(this.form.value)
       .catch((error) => {
         console.error(error);
@@ -41,9 +41,9 @@ export class LoginComponent implements OnInit {
       })
       .then((data) => {
         if (data && data.user) {
-          this.router.navigateByUrl('home');
+          this._router.navigateByUrl('home');
         } else {
-          this.notificationService.show(
+          this._notificationService.show(
             'Login or password is incorrect',
             'danger'
           );

@@ -32,15 +32,15 @@ export class BudgetsService {
   expensesColName: string = 'expenses';
 
   private readonly _budgetsCol: AngularFirestoreCollection<Budget> =
-    this.afs.collection<Budget>(this.budgetsColName, (ref) =>
+    this._afs.collection<Budget>(this.budgetsColName, (ref) =>
       ref.orderBy('name')
     );
   private readonly _expensesCol: AngularFirestoreCollection<Expense> =
-    this.afs.collection<Expense>(this.expensesColName, (ref) =>
+    this._afs.collection<Expense>(this.expensesColName, (ref) =>
       ref.orderBy('name')
     );
 
-  constructor(private afs: AngularFirestore) {
+  constructor(private _afs: AngularFirestore) {
     this.expenses$ = combineLatest({
       budgets: this._budgetsCol.valueChanges(),
       expenses: this._searchString$.pipe(
@@ -48,7 +48,7 @@ export class BudgetsService {
           if (!searchString) {
             return this._expensesCol.valueChanges();
           } else {
-            return this.afs
+            return this._afs
               .collection<Expense>(this.expensesColName, (ref) =>
                 ref
                   .orderBy('name')
@@ -82,7 +82,7 @@ export class BudgetsService {
   }
 
   get(id: string) {
-    return this.afs
+    return this._afs
       .collection<Budget>(this.budgetsColName, (ref) =>
         ref.where('id', '==', id)
       )
@@ -95,7 +95,7 @@ export class BudgetsService {
   }
 
   update(budget: Budget) {
-    return this.afs
+    return this._afs
       .collection<Budget>(this.budgetsColName, (ref) =>
         ref.where('id', '==', budget.id)
       )
@@ -113,12 +113,12 @@ export class BudgetsService {
 
   delete(id: string) {
     return combineLatest({
-      budgets: this.afs
+      budgets: this._afs
         .collection<Budget>(this.budgetsColName, (ref) =>
           ref.where('id', '==', id)
         )
         .snapshotChanges(),
-      expenses: this.afs
+      expenses: this._afs
         .collection<Expense>(this.expensesColName, (ref) =>
           ref.where('budgetId', '==', id)
         )
@@ -126,17 +126,17 @@ export class BudgetsService {
     }).pipe(
       take(1),
       switchMap((data) => {
-        const batch = this.afs.firestore.batch();
+        const batch = this._afs.firestore.batch();
 
         data.budgets.forEach((budget) => {
-          const deleteDoc = this.afs
+          const deleteDoc = this._afs
             .collection<Budget>(this.budgetsColName)
             .doc<Budget>(budget?.payload?.doc?.id).ref;
           batch.delete(deleteDoc);
         });
 
         data.expenses.forEach((expense) => {
-          const deleteDoc = this.afs
+          const deleteDoc = this._afs
             .collection<Expense>(this.expensesColName)
             .doc<Expense>(expense?.payload?.doc?.id).ref;
           batch.delete(deleteDoc);
@@ -148,7 +148,7 @@ export class BudgetsService {
   }
 
   getExpense(id: string) {
-    return this.afs
+    return this._afs
       .collection<Expense>(this.expensesColName, (ref) =>
         ref.where('id', '==', id)
       )
@@ -161,7 +161,7 @@ export class BudgetsService {
   }
 
   updateExpense(expense: Expense) {
-    return this.afs
+    return this._afs
       .collection<Expense>(this.expensesColName, (ref) =>
         ref.where('id', '==', expense.id)
       )
@@ -178,7 +178,7 @@ export class BudgetsService {
   }
 
   deleteExpense(id: string) {
-    return this.afs
+    return this._afs
       .collection<Expense>(this.expensesColName, (ref) =>
         ref.where('id', '==', id)
       )
@@ -205,31 +205,31 @@ export class BudgetsService {
     }).pipe(
       take(1),
       switchMap((data) => {
-        const batch = this.afs.firestore.batch();
+        const batch = this._afs.firestore.batch();
 
         data.budgets.forEach((budget) => {
-          const deleteDoc = this.afs
+          const deleteDoc = this._afs
             .collection<Budget>(this.budgetsColName)
             .doc<Budget>(budget?.payload?.doc?.id).ref;
           batch.delete(deleteDoc);
         });
 
         data.expenses.forEach((expense) => {
-          const deleteDoc = this.afs
+          const deleteDoc = this._afs
             .collection<Expense>(this.expensesColName)
             .doc<Expense>(expense?.payload?.doc?.id).ref;
           batch.delete(deleteDoc);
         });
 
         budgetsData.forEach((budget: Budget) => {
-          const insert = this.afs
+          const insert = this._afs
             .collection<Budget>(this.budgetsColName)
             .doc<Budget>(budget.id).ref;
           batch.set(insert, budget);
         });
 
         expensesData.forEach((expense: Expense) => {
-          const insert = this.afs
+          const insert = this._afs
             .collection<Expense>(this.expensesColName)
             .doc<Expense>(expense.id).ref;
           batch.set(insert, expense);

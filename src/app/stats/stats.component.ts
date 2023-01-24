@@ -22,8 +22,8 @@ export class StatsComponent implements OnInit {
 
   @Input() mode: string = '';
 
-  constructor(private budgetsService: BudgetsService) {
-    this.expenses$ = this.budgetsService.expenses$;
+  constructor(private _budgetsService: BudgetsService) {
+    this.expenses$ = this._budgetsService.expenses$;
   }
 
   ngOnInit(): void {
