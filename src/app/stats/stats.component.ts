@@ -17,7 +17,7 @@ import { BudgetsService } from '../common/services/budgets.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatsComponent implements OnInit {
-  public readonly expenses$: Observable<Budget[]>;
+  readonly expenses$: Observable<Budget[]>;
   stats$: Observable<Stat[]>;
 
   @Input() mode: string = '';

@@ -23,10 +23,11 @@ import { BudgetsService } from '../common/services/budgets.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  public readonly expenses$: Observable<Budget[]>;
-  public readonly search: FormControl = new FormControl('');
-  public readonly searchLoading$: BehaviorSubject<boolean> =
-    new BehaviorSubject(false);
+  readonly expenses$: Observable<Budget[]>;
+  readonly search: FormControl = new FormControl('');
+  readonly searchLoading$: BehaviorSubject<boolean> = new BehaviorSubject(
+    false
+  );
   private search$: Subscription;
 
   constructor(private budgetsService: BudgetsService) {

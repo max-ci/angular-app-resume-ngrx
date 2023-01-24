@@ -31,26 +31,25 @@ import { selectAllBudgets } from '../common/state/reducers/budget.reducer';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BudgetsComponent implements OnInit, OnDestroy {
-  public readonly budgets$: Observable<Budget[]> =
-    this.store.select(selectAllBudgets);
+  readonly budgets$: Observable<Budget[]> = this.store.select(selectAllBudgets);
   private readonly _unsubscribeSub$: Subject<void>;
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
 
-  private readonly emptyBudget: Budget = {
+  private readonly _emptyBudget: Budget = {
     id: '',
     name: '',
     color: '#333333',
     value: 0,
   };
-  public currentId: string = this.emptyBudget.id;
+  currentId: string = this._emptyBudget.id;
 
-  public form: FormGroup = this.formBuilder.group({
-    id: [this.emptyBudget.id],
-    name: [this.emptyBudget.name, Validators.required],
-    color: [this.emptyBudget.color, Validators.required],
+  form: FormGroup = this.formBuilder.group({
+    id: [this._emptyBudget.id],
+    name: [this._emptyBudget.name, Validators.required],
+    color: [this._emptyBudget.color, Validators.required],
     value: [
-      this.emptyBudget.value,
+      this._emptyBudget.value,
       [
         Validators.required,
         Validators.min(1),
@@ -59,7 +58,7 @@ export class BudgetsComponent implements OnInit, OnDestroy {
     ],
   });
 
-  public formState: FormState = FormState.Create;
+  formState: FormState = FormState.Create;
 
   constructor(
     private store: Store<{ budgets: Budget[] }>,
@@ -198,8 +197,8 @@ export class BudgetsComponent implements OnInit, OnDestroy {
   }
 
   reset(): void {
-    this.setCurrentId(this.emptyBudget);
-    this.form.reset(this.emptyBudget);
+    this.setCurrentId(this._emptyBudget);
+    this.form.reset(this._emptyBudget);
     this.setFormState(FormState.Create);
   }
 

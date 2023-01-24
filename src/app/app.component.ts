@@ -13,7 +13,7 @@ import { AuthService } from './common/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  isLoggedIn$: Observable<User | null> = this.auth.authState;
+  isLoggedIn$: Observable<User | null> = this._auth.authState;
 
   links: Link[] = [
     {
@@ -35,18 +35,16 @@ export class AppComponent implements OnInit {
   ];
 
   constructor(
-    private authService: AuthService,
-    public router: Router,
-    private auth: AngularFireAuth
+    private _authService: AuthService,
+    private _router: Router,
+    private _auth: AngularFireAuth
   ) {}
 
   ngOnInit() {
-    if (this.router.url === '/') {
-      this.router.navigate(['/home']);
-    }
+    this._router.navigate(['/home']);
   }
 
   logout(): void {
-    this.authService.logout();
+    this._authService.logout();
   }
 }

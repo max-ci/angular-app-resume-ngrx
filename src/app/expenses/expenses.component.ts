@@ -29,7 +29,7 @@ import { BudgetsService } from '../common/services/budgets.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpensesComponent implements OnDestroy {
-  public readonly budgets$: Observable<Budget[]>;
+  readonly budgets$: Observable<Budget[]>;
   private readonly _unsubscribeSub$: Subject<void>;
 
   @ViewChild('dialogTemplate') dialogTemplate: TemplateRef<any>;
@@ -42,10 +42,10 @@ export class ExpensesComponent implements OnDestroy {
     price: 0,
   };
 
-  public currentId: string = this.emptyExpense.id;
-  public formState: FormState = FormState.Create;
+  currentId: string = this.emptyExpense.id;
+  formState: FormState = FormState.Create;
 
-  public form: FormGroup = this.formBuilder.group({
+  form: FormGroup = this.formBuilder.group({
     id: [this.emptyExpense.id],
     name: [this.emptyExpense.name, Validators.required],
     price: [

@@ -23,31 +23,30 @@ import { Expense } from '../interfaces/expense';
   providedIn: 'root',
 })
 export class BudgetsService {
-  public readonly budgets$: Observable<Budget[]>;
-  public readonly expenses$: Observable<Budget[]>;
-  private readonly searchString$: BehaviorSubject<string> = new BehaviorSubject(
-    ''
-  );
+  readonly budgets$: Observable<Budget[]>;
+  readonly expenses$: Observable<Budget[]>;
+  private readonly _searchString$: BehaviorSubject<string> =
+    new BehaviorSubject('');
 
   budgetsColName: string = 'budgets';
   expensesColName: string = 'expenses';
 
-  public readonly budgetsCol: AngularFirestoreCollection<Budget> =
+  private readonly _budgetsCol: AngularFirestoreCollection<Budget> =
     this.afs.collection<Budget>(this.budgetsColName, (ref) =>
       ref.orderBy('name')
     );
-  public readonly expensesCol: AngularFirestoreCollection<Expense> =
+  private readonly _expensesCol: AngularFirestoreCollection<Expense> =
     this.afs.collection<Expense>(this.expensesColName, (ref) =>
       ref.orderBy('name')
     );
 
   constructor(private afs: AngularFirestore) {
     this.expenses$ = combineLatest({
-      budgets: this.budgetsCol.valueChanges(),
-      expenses: this.searchString$.pipe(
+      budgets: this._budgetsCol.valueChanges(),
+      expenses: this._searchString$.pipe(
         switchMap((searchString) => {
           if (!searchString) {
-            return this.expensesCol.valueChanges();
+            return this._expensesCol.valueChanges();
           } else {
             return this.afs
               .collection<Expense>(this.expensesColName, (ref) =>
@@ -79,7 +78,7 @@ export class BudgetsService {
   }
 
   getAll() {
-    return this.budgetsCol.stateChanges();
+    return this._budgetsCol.stateChanges();
   }
 
   get(id: string) {
@@ -92,7 +91,7 @@ export class BudgetsService {
   }
 
   create(budget: Budget) {
-    return of(this.budgetsCol.add({ ...budget, id: uuidv4() }));
+    return of(this._budgetsCol.add({ ...budget, id: uuidv4() }));
   }
 
   update(budget: Budget) {
@@ -107,7 +106,7 @@ export class BudgetsService {
           return actions?.[0]?.payload?.doc?.id;
         }),
         switchMap((documentId: string) => {
-          return this.budgetsCol.doc<Budget>(documentId).update(budget);
+          return this._budgetsCol.doc<Budget>(documentId).update(budget);
         })
       );
   }
@@ -158,7 +157,7 @@ export class BudgetsService {
   }
 
   createExpense(expense: Expense) {
-    return of(this.expensesCol.add({ ...expense, id: uuidv4() }));
+    return of(this._expensesCol.add({ ...expense, id: uuidv4() }));
   }
 
   updateExpense(expense: Expense) {
@@ -173,7 +172,7 @@ export class BudgetsService {
           return actions?.[0]?.payload?.doc?.id;
         }),
         switchMap((documentId: string) => {
-          return this.expensesCol.doc<Expense>(documentId).update(expense);
+          return this._expensesCol.doc<Expense>(documentId).update(expense);
         })
       );
   }
@@ -190,19 +189,19 @@ export class BudgetsService {
           return actions?.[0]?.payload?.doc?.id;
         }),
         switchMap((documentId: string) => {
-          return this.expensesCol.doc<Expense>(documentId).delete();
+          return this._expensesCol.doc<Expense>(documentId).delete();
         })
       );
   }
 
   setSearchString(searchString: string) {
-    this.searchString$.next(searchString);
+    this._searchString$.next(searchString);
   }
 
   loadSampleData() {
     return combineLatest({
-      budgets: this.budgetsCol.snapshotChanges(),
-      expenses: this.expensesCol.snapshotChanges(),
+      budgets: this._budgetsCol.snapshotChanges(),
+      expenses: this._expensesCol.snapshotChanges(),
     }).pipe(
       take(1),
       switchMap((data) => {
